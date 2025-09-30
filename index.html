@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quản Lý Dịch Vụ Mạng - 54.225.52.171</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Network Services Dashboard - Ubuntu Server</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container-fluid">
@@ -14,31 +14,28 @@
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
                 <div class="position-sticky pt-3">
-                    <h4 class="text-white text-center mb-4">
-                        <i class="fas fa-server"></i> Network Services
-                    </h4>
-                    <div class="text-center text-white mb-3">
-                        <small>Server: 54.225.52.171</small>
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="fas fa-server"></i>
+                            Network Dashboard
+                        </h4>
+                        <small class="text-muted">Server: 54.225.52.171</small>
                     </div>
+                    
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#overview">
-                                <i class="fas fa-tachometer-alt"></i> Tổng quan
+                            <a class="nav-link active" href="#dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#webservers">
-                                <i class="fas fa-globe"></i> Web Servers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#network-services">
-                                <i class="fas fa-network-wired"></i> Dịch vụ mạng
+                            <a class="nav-link" href="#services">
+                                <i class="fas fa-cogs"></i> Dịch vụ
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#monitoring">
-                                <i class="fas fa-chart-line"></i> Monitoring
+                                <i class="fas fa-chart-line"></i> Giám sát
                             </a>
                         </li>
                         <li class="nav-item">
@@ -46,53 +43,86 @@
                                 <i class="fas fa-tools"></i> Bảo trì
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#logs">
+                                <i class="fas fa-file-alt"></i> Logs
+                            </a>
+                        </li>
                     </ul>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary btn-sm w-100" onclick="refreshAll()">
+                            <i class="fas fa-sync-alt"></i> Làm mới
+                        </button>
+                    </div>
                 </div>
             </nav>
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard Quản Lý Dịch Vụ Mạng</h1>
+                    <h1 class="h2">Ubuntu Server Network Management</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshAll()">
-                                <i class="fas fa-sync-alt"></i> Refresh
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-clock"></i> <span id="currentTime"></span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Overview Section -->
-                <section id="overview" class="mb-5">
-                    <h3><i class="fas fa-tachometer-alt text-primary"></i> Tổng quan Web Server</h3>
+                <!-- Dashboard Overview -->
+                <section id="dashboard" class="mb-5">
                     <div class="row">
-                        <div class="col-md-6 col-lg-3 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fab fa-apache service-icon text-danger"></i>
-                                    <h5 class="card-title">Apache2</h5>
-                                    <p class="status-badge running">Đang chạy</p>
-                                    <small class="text-muted">Port: 80</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('apache2', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('apache2', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('apache2', 'stop')">Stop</button>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 id="runningServices">0</h4>
+                                            <small>Dịch vụ đang chạy</small>
+                                        </div>
+                                        <i class="fas fa-play-circle fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-3 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-server service-icon text-success"></i>
-                                    <h5 class="card-title">Nginx</h5>
-                                    <p class="status-badge running">Đang chạy</p>
-                                    <small class="text-muted">Port: 8080</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('nginx', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('nginx', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('nginx', 'stop')">Stop</button>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-danger">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 id="stoppedServices">0</h4>
+                                            <small>Dịch vụ đã dừng</small>
+                                        </div>
+                                        <i class="fas fa-stop-circle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-info">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 id="cpuUsage">0%</h4>
+                                            <small>CPU Usage</small>
+                                        </div>
+                                        <i class="fas fa-microchip fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 id="memoryUsage">0%</h4>
+                                            <small>Memory Usage</small>
+                                        </div>
+                                        <i class="fas fa-memory fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
@@ -100,81 +130,161 @@
                     </div>
                 </section>
 
-                <!-- Network Services Section -->
-                <section id="network-services" class="mb-5">
-                    <h3><i class="fas fa-network-wired text-info"></i> Một số dịch vụ mạng</h3>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-balance-scale service-icon text-primary"></i>
-                                    <h5 class="card-title">HaProxy</h5>
-                                    <p class="status-badge stopped">Đã dừng</p>
-                                    <small class="text-muted">Port: 80</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('haproxy', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('haproxy', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('haproxy', 'stop')">Stop</button>
+                <!-- Services Management -->
+                <section id="services" class="mb-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cogs"></i> Quản lý dịch vụ mạng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Apache2 -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-primary">
+                                                <i class="fab fa-apache"></i>
+                                            </div>
+                                            <h5 class="card-title">Apache2</h5>
+                                            <span class="status-badge stopped" id="apache2-status">Đã dừng</span>
+                                            <p class="card-text">Web Server - Port 80</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('apache2', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('apache2', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('apache2', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-folder-open service-icon text-warning"></i>
-                                    <h5 class="card-title">FTP Server</h5>
-                                    <p class="status-badge running">Đang chạy</p>
-                                    <small class="text-muted">Port: 21</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('vsftpd', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('vsftpd', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('vsftpd', 'stop')">Stop</button>
+
+                                <!-- Nginx -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-success">
+                                                <i class="fas fa-server"></i>
+                                            </div>
+                                            <h5 class="card-title">Nginx</h5>
+                                            <span class="status-badge stopped" id="nginx-status">Đã dừng</span>
+                                            <p class="card-text">Web Server - Port 8080</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('nginx', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('nginx', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('nginx', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-terminal service-icon text-dark"></i>
-                                    <h5 class="card-title">SSH Server</h5>
-                                    <p class="status-badge running">Đang chạy</p>
-                                    <small class="text-muted">Port: 22</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('ssh', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('ssh', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('ssh', 'stop')">Stop</button>
+
+                                <!-- HaProxy -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-info">
+                                                <i class="fas fa-balance-scale"></i>
+                                            </div>
+                                            <h5 class="card-title">HaProxy</h5>
+                                            <span class="status-badge stopped" id="haproxy-status">Đã dừng</span>
+                                            <p class="card-text">Load Balancer - Port 80</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('haproxy', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('haproxy', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('haproxy', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-network-wired service-icon text-info"></i>
-                                    <h5 class="card-title">DHCP Server</h5>
-                                    <p class="status-badge stopped">Đã dừng</p>
-                                    <small class="text-muted">Port: 67</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('isc-dhcp-server', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('isc-dhcp-server', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('isc-dhcp-server', 'stop')">Stop</button>
+
+                                <!-- FTP Server -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-warning">
+                                                <i class="fas fa-folder-open"></i>
+                                            </div>
+                                            <h5 class="card-title">FTP Server</h5>
+                                            <span class="status-badge stopped" id="vsftpd-status">Đã dừng</span>
+                                            <p class="card-text">File Transfer - Port 21</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('vsftpd', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('vsftpd', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('vsftpd', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card service-card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-plug service-icon text-secondary"></i>
-                                    <h5 class="card-title">Telnet - Inetd</h5>
-                                    <p class="status-badge stopped">Đã dừng</p>
-                                    <small class="text-muted">Port: 23</small>
-                                    <div class="btn-group mt-2">
-                                        <button class="btn btn-sm btn-success" onclick="controlService('inetd', 'start')">Start</button>
-                                        <button class="btn btn-sm btn-warning" onclick="controlService('inetd', 'restart')">Restart</button>
-                                        <button class="btn btn-sm btn-danger" onclick="controlService('inetd', 'stop')">Stop</button>
+
+                                <!-- SSH Server -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-dark">
+                                                <i class="fas fa-terminal"></i>
+                                            </div>
+                                            <h5 class="card-title">SSH Server</h5>
+                                            <span class="status-badge running" id="ssh-status">Đang chạy</span>
+                                            <p class="card-text">Remote Access - Port 22</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('ssh', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('ssh', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('ssh', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- DHCP Server -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card service-card">
+                                        <div class="card-body text-center">
+                                            <div class="service-icon text-secondary">
+                                                <i class="fas fa-network-wired"></i>
+                                            </div>
+                                            <h5 class="card-title">DHCP Server</h5>
+                                            <span class="status-badge stopped" id="isc-dhcp-server-status">Đã dừng</span>
+                                            <p class="card-text">IP Assignment - Port 67</p>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-success" onclick="controlService('isc-dhcp-server', 'start')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="controlService('isc-dhcp-server', 'restart')">
+                                                    <i class="fas fa-redo"></i> Restart
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="controlService('isc-dhcp-server', 'stop')">
+                                                    <i class="fas fa-stop"></i> Stop
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -182,48 +292,43 @@
                     </div>
                 </section>
 
-                <!-- Monitoring Section -->
+                <!-- System Monitoring -->
                 <section id="monitoring" class="mb-5">
-                    <h3><i class="fas fa-chart-line text-success"></i> Monitoring Services</h3>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5><i class="fas fa-eye"></i> Trạng thái hệ thống</h5>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Giám sát hệ thống</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="metric-box">
+                                        <h6><i class="fas fa-microchip text-primary"></i> CPU Usage</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-primary" id="cpu-bar" role="progressbar" style="width: 0%">0%</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="metric-box">
-                                                <h6>CPU Usage</h6>
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-success" id="cpu-bar" style="width: 45%">45%</div>
-                                                </div>
-                                            </div>
+                                <div class="col-md-6">
+                                    <div class="metric-box">
+                                        <h6><i class="fas fa-memory text-warning"></i> Memory Usage</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-warning" id="memory-bar" role="progressbar" style="width: 0%">0%</div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <div class="metric-box">
-                                                <h6>Memory Usage</h6>
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-warning" id="memory-bar" style="width: 72%">72%</div>
-                                                </div>
-                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-box">
+                                        <h6><i class="fas fa-hdd text-info"></i> Disk Usage</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-info" id="disk-bar" role="progressbar" style="width: 0%">0%</div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <div class="metric-box">
-                                                <h6>Disk Usage</h6>
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-info" id="disk-bar" style="width: 35%">35%</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="metric-box">
-                                                <h6>Network</h6>
-                                                <div class="progress">
-                                                    <div class="progress-bar bg-primary" id="network-bar" style="width: 28%">28%</div>
-                                                </div>
-                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-box">
+                                        <h6><i class="fas fa-wifi text-success"></i> Network Activity</h6>
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-success" id="network-bar" role="progressbar" style="width: 0%">0%</div>
                                         </div>
                                     </div>
                                 </div>
@@ -232,47 +337,40 @@
                     </div>
                 </section>
 
-                <!-- Maintenance Section -->
+                <!-- Maintenance -->
                 <section id="maintenance" class="mb-5">
-                    <h3><i class="fas fa-tools text-warning"></i> Thực hành cài đặt và bảo trì các dịch vụ mạng</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5><i class="fas fa-download"></i> Cài đặt dịch vụ</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <select class="form-select" id="serviceSelect">
-                                            <option value="">Chọn dịch vụ cần cài đặt</option>
-                                            <option value="apache2">Apache2</option>
-                                            <option value="nginx">Nginx</option>
-                                            <option value="haproxy">HaProxy</option>
-                                            <option value="vsftpd">FTP Server</option>
-                                            <option value="openssh-server">SSH Server</option>
-                                            <option value="isc-dhcp-server">DHCP Server</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn btn-primary" onclick="installService()">
-                                        <i class="fas fa-download"></i> Cài đặt
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-tools"></i> Bảo trì hệ thống</h5>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5><i class="fas fa-cog"></i> Cấu hình nhanh</h5>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Cài đặt dịch vụ mới</h6>
+                                    <div class="input-group mb-3">
+                                        <select class="form-select" id="serviceSelect">
+                                            <option value="">Chọn dịch vụ...</option>
+                                            <option value="mysql-server">MySQL Server</option>
+                                            <option value="postgresql">PostgreSQL</option>
+                                            <option value="redis-server">Redis Server</option>
+                                            <option value="mongodb">MongoDB</option>
+                                            <option value="docker.io">Docker</option>
+                                        </select>
+                                        <button class="btn btn-primary" onclick="installService()">
+                                            <i class="fas fa-download"></i> Cài đặt
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-outline-primary" onclick="configureFirewall()">
+                                <div class="col-md-6">
+                                    <h6>Thao tác hệ thống</h6>
+                                    <div class="btn-group-vertical w-100">
+                                        <button class="btn btn-outline-warning mb-2" onclick="configureFirewall()">
                                             <i class="fas fa-shield-alt"></i> Cấu hình Firewall
                                         </button>
-                                        <button class="btn btn-outline-success" onclick="updateSystem()">
-                                            <i class="fas fa-sync-alt"></i> Cập nhật hệ thống
+                                        <button class="btn btn-outline-info mb-2" onclick="updateSystem()">
+                                            <i class="fas fa-sync"></i> Cập nhật hệ thống
                                         </button>
-                                        <button class="btn btn-outline-warning" onclick="backupConfigs()">
+                                        <button class="btn btn-outline-secondary" onclick="backupConfigs()">
                                             <i class="fas fa-save"></i> Sao lưu cấu hình
                                         </button>
                                     </div>
@@ -282,7 +380,7 @@
                     </div>
                 </section>
 
-                <!-- Log Section -->
+                <!-- System Logs -->
                 <section id="logs" class="mb-5">
                     <div class="card">
                         <div class="card-header">
@@ -290,14 +388,10 @@
                         </div>
                         <div class="card-body">
                             <div class="log-container">
-                                <pre id="logContent">
-[2025-09-30 21:21:23] System dashboard initialized on 54.225.52.171
-[2025-09-30 21:21:25] Apache2 service started successfully
-[2025-09-30 21:21:27] Nginx service started successfully
-[2025-09-30 21:21:30] SSH service is running on port 22
-[2025-09-30 21:21:32] FTP server started on port 21
-[2025-09-30 21:21:35] System monitoring active
-                                </pre>
+                                <pre id="logContent">[Khởi tạo] Network Dashboard đã được khởi động
+[Thông tin] Đang kết nối đến server 54.225.52.171
+[Thành công] Dashboard sẵn sàng hoạt động
+</pre>
                             </div>
                         </div>
                     </div>
